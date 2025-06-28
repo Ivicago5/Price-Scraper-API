@@ -1,4 +1,4 @@
-import db from '../db/index.js';
+import db from '../../db/index.js';
 
 const insertProduct = async ({ productId, url, source, title, price}) => {
     const result = await db.query(`

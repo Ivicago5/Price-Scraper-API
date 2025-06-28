@@ -1,5 +1,5 @@
 import scrapeProduct from "../scraper/index.js";
-import productModel from "../models/productModel.js";
+import productModel from "../src/models/productModel.js";
 
 export async function scrapeAllProducts() {
     const products = await productModel.getAllTrackedProducts();

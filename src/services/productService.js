@@ -1,5 +1,5 @@
 import productModel from '../models/productModel.js';
-import scrapeProduct from "../scraper/index.js";
+import scrapeProduct from "../../scraper/index.js";
 
 function getSourceFromUrl(url) {
     if (url.includes('aliexpress.com')) return 'aliexpress';
