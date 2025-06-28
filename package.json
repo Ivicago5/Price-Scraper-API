@@ -1,0 +1,20 @@
+{
+  "name": "price-scraper-api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "node-cron": "^4.1.1",
+    "pg": "^8.16.2",
+    "puppeteer": "^24.10.2"
+  }
+}
