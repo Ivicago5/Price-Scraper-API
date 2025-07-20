@@ -1,22 +1,14 @@
-import scrapeProduct from "../scraper/index.js";
-import productModel from "../src/models/productModel.js";
+import dotenv from 'dotenv';
+dotenv.config();
 
-export async function scrapeAllProducts() {
-    const products = await productModel.getAllTrackedProducts();
+import { updatePricesForAllTracked } from '../src/services/productService.js';
 
-    for (const product of products) {
-        try {
-            const scraped = await scrapeProduct(product.url, product.source);
 
-            await productModel.insertProduct({
-                ...scraped,
-                url: product.url,
-                source: product.source
-            });
-
-            console.log(`Scraped: ${product.url}`);
-        } catch (err) {
-            console.log(`Failed to scrape ${product.url}:`, err.message);
-        }
-    }
+try {
+    await updatePricesForAllTracked();
+    console.log('All prices updated');
+    process.exit(0);
+} catch (err) {
+    console.error('Error updating prices:', err);
+    process.exit(1);
 }

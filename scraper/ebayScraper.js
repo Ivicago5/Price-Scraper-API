@@ -1,35 +1,42 @@
-import puppeteer from "puppeteer";
+import puppeteer from 'puppeteer';
 
-export default async function scrapeEbayProduct(productUrl) {
-    const browser = await puppeteer.launch({headless: 'new' });
-    const page = await browser.newPage();
-   
+export async function scrapeEbayProduct(url) {
+  const browser = await puppeteer.launch({ headless: 'new' });
+  const page = await browser.newPage();
 
-    try {
-         await page.goto(productUrl, {waitUntil: 'domcontentloaded', timeout: 0});
+  await page.setUserAgent(
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36'
+  );
 
-         const data = await page.evaluate(() => {
-            const title = document.querySelector('#itemTitle')?.innerText?.replace('Details about ', '') || '';
-            const priceEl = 
-                document.querySelector('#prcIsum') ||
-                document.querySelector('#prcIsum_bidPrice') || 
-                document.querySelector('[itemprop="price"]');
+  //   await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 0 });
 
-            const rawPrice = priceEl?.innerText || priceEl?.getAttribute('content') || '0';
-            const cleanedPrice = rawPrice.replace(/[^\d.,]/g, '').replace(',', '.');
+ try {
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 0 });
 
-            return{
-                title: title.trim(),
-                price: parseFloat(cleanedPrice),
-                timestamp: new Date().toISOString()
-            }
-          })
-    } catch (err) {
+    // Wait for the title and price to appear
+    await page.waitForSelector('.d-item-title', { timeout: 15000 });
+    await page.waitForSelector('.x-price-primary', { timeout: 15000 });
 
-        console.error('eBay scrape error:', err.message);
-        throw new Error('Failed to scrape eBay product');
+    const data = await page.evaluate(() => {
+      const title = document.querySelector('.d-item-title')?.textContent?.trim() || '';
+      const priceText = document.querySelector('.x-price-primary')?.textContent?.trim() || '';
+      const price = parseFloat(priceText.replace(/[^\d.,]/g, '').replace(',', '.'));
 
-    } finally {
-        await browser.close();
+      return {
+        title,
+        price: isNaN(price) ? null : price, // Ensure price is valid
+      };
+    });
+
+    if (!data.title || !data.price) {
+      throw new Error('Failed to extract title or price from eBay.');
     }
+
+    return data;
+  } catch (error) {
+    console.error('Error scraping eBay product:', error);
+    return { title: '', price: null };  // Handle error gracefully
+  } finally {
+    await browser.close();
+  }
 }

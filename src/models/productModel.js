@@ -17,15 +17,17 @@ const getAllProducts = async () => {
 
 const updateProductPrice = async (productId, price) => {
     const result = await db.query(`
-        UPDATE products SET price $1, last_checked = NOW()
-        WHERE product_id = $2 RETURNING *;
+        UPDATE products
+        SET price $1, last_checked = NOW()
+        WHERE product_id = $2
+        RETURNING *;
         `, [price, productId]);
     return result.rows[0];
 }
 
 const getAllTrackedProducts = async () => {
     const result = await db.query(`
-        SELECT DISTINCT url, source FROM products`
+        SELECT url, source FROM products`
     );
     return result.rows
 }
