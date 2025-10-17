@@ -15,7 +15,6 @@ export async function scrapeAmazonProduct(url) {
             price,
         }
     });
-    const ivica = 10;
 
     await browser.close();
 
